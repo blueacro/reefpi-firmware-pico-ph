@@ -1,16 +1,14 @@
 #include <atmel_start.h>
 
 
-volatile int16_t last_adc_value;
-uint16_t foo = 0xDEAD;
-int pos = 0;
+volatile uint8_t last_adc_value[2];
+
+volatile int pos = 1;
 
 static void adc_cb(const struct adc_async_descriptor *const descr, const uint8_t channel)
 {
-	int16_t read;
-	int32_t bytes = adc_async_read_channel(descr, channel, (uint8_t*)&read, sizeof(read));
-	
-	last_adc_value = read;
+	adc_async_read_channel(descr, channel, (uint8_t*)&last_adc_value, 2);
+	adc_async_start_conversion(&ADC_0);
 }
 void adc_start(void)
 {
@@ -23,16 +21,43 @@ void adc_start(void)
 static struct io_descriptor *io;
 static void I2C_0_rx_complete(const struct i2c_s_async_descriptor *const descr)
 {
+	static int mode;
 	uint8_t c;
 	io_read(io, &c, 1);
-	pos = 0;
+	switch(mode) {
+		case 0x0:
+			switch(c) {
+				case 0:
+				case 0xa5:
+				// This is addressing the conversion register - do node mode switches
+					pos = 1;
+					return;
+				case 0x02:
+				// Set gain
+					mode = 0x02;
+					return;
+				default:
+					return;
+			}
+		case 0x02:
+		// Set gain
+			adc_async_set_channel_gain(&ADC_0, 0, c);	
+			mode = 0x0;
+			return;
+		
+		default:
+			mode = 0;
+			return;
+	}
+		
 }
 
 static void I2C_0_tx_pending(const struct i2c_s_async_descriptor *const descr)
 {
-	uint8_t value = last_adc_value >> (pos*8);
-	io_write(io, &value, 1);
-	pos++;
+	io_write(io, (uint8_t*)&last_adc_value[pos], 1);
+	pos--;
+	if (pos < 0) 
+		pos = 0;
 }
 
 static void I2C_0_tx_complete(const struct i2c_s_async_descriptor *const descr)
@@ -57,6 +82,6 @@ int main(void)
 	
 	/* Replace with your application code */
 	while (1) {
-		delay_ms(100);
+		sleep(1);
 	}
 }

@@ -45,14 +45,14 @@
 // <i> These bits define the ADC clock relative to the peripheral clock (PRESCALER)
 // <id> adc_prescaler
 #ifndef CONF_ADC_0_PRESCALER
-#define CONF_ADC_0_PRESCALER 0x0
+#define CONF_ADC_0_PRESCALER 0x3
 #endif
 
 // <q> Free Running Mode
 // <i> When enabled, the ADC is in free running mode and a new conversion will be initiated when a previous conversion completes. (FREERUN)
 // <id> adc_freerunning_mode
 #ifndef CONF_ADC_0_FREERUN
-#define CONF_ADC_0_FREERUN 1
+#define CONF_ADC_0_FREERUN 0
 #endif
 
 // <q> Differential Mode
@@ -178,7 +178,7 @@
 // <i> These bits set the gain factor of the ADC gain stage. (GAIN)
 // <id> adc_arch_gain
 #ifndef CONF_ADC_0_GAIN
-#define CONF_ADC_0_GAIN 0x0
+#define CONF_ADC_0_GAIN 0x1
 #endif
 
 // <o> Adjusting Result / Division Coefficient <0-7>
@@ -203,14 +203,14 @@
 // <i> Define how many samples should be added together.The result will be available in the Result register (SAMPLENUM)
 // <id> adc_arch_samplenum
 #ifndef CONF_ADC_0_SAMPLENUM
-#define CONF_ADC_0_SAMPLENUM 0x6
+#define CONF_ADC_0_SAMPLENUM 0x7
 #endif
 
 // <o> Sampling Time Length <0-63>
 // <i> These bits control the ADC sampling time in number of half CLK_ADC cycles, depending of the prescaler value, thus controlling the ADC input impedance. (SAMPLEN)
 // <id> adc_arch_samplen
 #ifndef CONF_ADC_0_SAMPLEN
-#define CONF_ADC_0_SAMPLEN 0
+#define CONF_ADC_0_SAMPLEN 63
 #endif
 
 // <o> Window Monitor Mode
